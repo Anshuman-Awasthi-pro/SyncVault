@@ -1,0 +1,5 @@
+redis.asyncio
+fastapi
+asyncio
+pydantic
+typing
