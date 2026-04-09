@@ -3,3 +3,4 @@ fastapi
 asyncio
 pydantic
 typing
+google-generativeai
