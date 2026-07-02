@@ -14,9 +14,11 @@ redis_db = redis.from_url(REDIS_URL, decode_responses = True, ssl_cert_reqs="non
 async def push_batch_to_queue(queue_name : str, payload : list):
     
     #Transaction as true works as donot distrub sign and avoid the server merging the files of different user pushed in same milisecond
-    async with redis_db.pipeline(transaction=True) as pipe:     
+    async with redis_db.pipeline(transaction=True) as pipe: 
+            
         for file in payload:
-            pipe.lpush(queue_name, json.dumps(file))
+            d = file.model_dump() #converting the pydantic model into dict because payload is not serializable
+            pipe.lpush(queue_name, json.dumps(d))
         await  pipe.execute()
         print(f"Success!! File {len(payload)} Pushed")
         
