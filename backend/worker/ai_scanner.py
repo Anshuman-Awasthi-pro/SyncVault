@@ -9,7 +9,24 @@ load_dotenv()
 
 client = genai.Client() #get the key from .env and handing the key to google to use the gemini api. it internally run os.getenv and calls the configure function and sets the api key to the client object
 
+MOCK_MODE = os.getenv("MOCK_MODE", "False").lower() == "true"
+
 def check_if_safe(code : str) -> bool:
+    
+    if MOCK_MODE :
+        code_upper = code.upper()
+        has_secret = "PASSWORD" in code_upper or "API_KEY" in code_upper or "SECRET" in code_upper or "PASS" in code_upper or "DATABASE_URI" in code_upper
+        has_malice = "DROP TABLE" in code_upper or "RM -RF" in code_upper
+        
+        print(f"[MOCK AI Active]: Executing local check for code safety...")
+        if has_secret or has_malice:
+            print(f"[Debug]: DANGEROUS")
+            return False
+        else :
+            print(f"[Debug]: SAFE")
+            return True 
+        
+        
     prompt = f"""
     -> Your role is is a "DevSecOps CI/CD Security Scanner."
     -> You are a code safety checker. Your task is to analyze the provided code and determine if it is safe to execute.
